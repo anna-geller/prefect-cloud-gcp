@@ -13,8 +13,12 @@ inputs:
   flow_entrypoint:
     description: 'Prefect flow entrypoint e.g. myflow.py:flow_function'
     required: true
-  deployment_name:
+  deployment:
     description: 'Prefect deployment name - could reference environment or branch name e.g. dev or prod'
+    required: false
+    default: default
+  queue:
+    description: 'Prefect queue name'
     required: false
     default: default
   storage_block:
@@ -54,6 +58,6 @@ runs:
       shell: bash
 
     - run: |
-        prefect deployment build ${{ inputs.flow_entrypoint }} -n ${{ inputs.deployment_name }} \
+        prefect deployment build ${{ inputs.flow_entrypoint }} -n ${{ inputs.deployment }} -q ${{ inputs.queue }} \
         -sb "${{ inputs.storage_block }}" -ib "${{ inputs.infrastructure_block }}" --skip-upload -a
       shell: bash

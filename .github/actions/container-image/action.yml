@@ -24,10 +24,14 @@ inputs:
     description: 'Artifact Registry Repository Name'
     required: false
     default: prefect
-  dockerfile_path:
-    description: 'Artifact Registry Repository Name'
+  artifact_image_name:
+    description: 'Artifact Registry Image Name'
     required: false
-    default: prefect
+    default: deployments
+  dockerfile_path:
+    description: 'Path and filename of the Dockerfile'
+    required: false
+    default: Dockerfile
 runs:
   using: "composite"
   steps:
@@ -46,7 +50,8 @@ runs:
 
     - id: set-image
       run: |
-        echo "IMAGE_URI=${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_repository }}/deployments:$GITHUB_SHA" >> $GITHUB_ENV
+        echo "LATEST=${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_repository }}/${{ inputs.artifact_image_name }}:latest" >> $GITHUB_ENV
+        echo "IMAGE_URI=${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_repository }}/${{ inputs.artifact_image_name }}:$GITHUB_SHA" >> $GITHUB_ENV
         echo "uri=$(echo $IMAGE_URI)" >> $GITHUB_OUTPUT
       shell: bash
 
@@ -59,6 +64,6 @@ runs:
 
     - id: build-image
       run: |
-        docker build --build-arg PREFECT_API_KEY=${{ inputs.prefect_api_key }} --build-arg PREFECT_API_URL=${{ inputs.prefect_api_url }} -t "${{ env.IMAGE_URI }}" -f ${{ inputs.dockerfile_path }} .
+        docker build --build-arg PREFECT_API_KEY=${{ inputs.prefect_api_key }} --build-arg PREFECT_API_URL=${{ inputs.prefect_api_url }} -t "${{ env.IMAGE_URI }}" -t "${{ env.LATEST }}" -f ${{ inputs.dockerfile_path }} .
         docker push "${{ env.IMAGE_URI }}"
       shell: bash
