@@ -1,0 +1,32 @@
+name: Prefect VM
+on:
+  workflow_dispatch:
+    inputs:
+      gcp_project_id:
+        description: Name of the GCP project ID
+        required: true
+        default: 'prefect-community'
+      artifact_repository:
+        description: Artifact Registry Repository
+        required: true
+        default: 'prefect'
+        type: string
+      region:
+        description: GCP region
+        required: true
+        default: 'us-east1'
+        type: string
+jobs:
+  container-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: deploy-container
+        uses: ./.github/actions/container-image
+        with:
+          prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
+          prefect_api_url: ${{ secrets.PREFECT_API_URL }}
+          artifact_repository: ${{ github.event.inputs.artifact_repository }}  # optional
+          region: ${{ github.event.inputs.region }}  # optional
+          gcp_credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          gcp_project_id: ${{ github.event.inputs.gcp_project_id }} # optional

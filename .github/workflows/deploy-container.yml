@@ -1,0 +1,51 @@
+name: Prefect VM
+on:
+  workflow_dispatch:
+    inputs:
+      gcp_project_id:
+        description: Name of the GCP project ID
+        required: true
+        default: 'prefect-community'
+      artifact_repository:
+        description: Artifact Registry Repository
+        required: true
+        default: 'prefect'
+        type: string
+      region:
+        description: GCP region
+        required: true
+        default: 'us-east1'
+        type: string
+      zone:
+        description: Zone in the selected GCP region
+        required: true
+        default: 'us-east1-b'
+        type: string
+      machine_type:
+        description: GCP Compute Engine instance type
+        required: true
+        default: 'e2-micro'
+        type: string
+      machine_name:
+        description: Unique name for your GCP Compute Engine instance
+        required: true
+        default: 'e2-micro'
+        type: string
+jobs:
+  deploy-container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: deploy-container
+        uses: ./.github/actions/deploy-container
+        with:
+          prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
+          prefect_api_url: ${{ secrets.PREFECT_API_URL }}
+          artifact_repository: ${{ github.event.inputs.artifact_repository }}  # optional
+          region: ${{ github.event.inputs.region }}  # optional
+          gcp_credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          gcp_project_id: ${{ github.event.inputs.gcp_project_id }} # optional
+          gcp_sa_email: ${{ secrets.GCP_SA_EMAIL }}
+          zone: ${{ github.event.inputs.zone }}  # optional
+          machine_type: ${{ github.event.inputs.machine_type }}  # optional
+          machine_name: ${{ github.event.inputs.machine_name }}  # optional

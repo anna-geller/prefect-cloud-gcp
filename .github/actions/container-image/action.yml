@@ -42,7 +42,7 @@ runs:
 
     - id: set-image
       run: |
-        echo "IMAGE_URI=${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_repository }}/agent:$GITHUB_SHA" >> $GITHUB_ENV
+        echo "IMAGE_URI=${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_repository }}/deployments:$GITHUB_SHA" >> $GITHUB_ENV
         echo "uri=$(echo $IMAGE_URI)" >> $GITHUB_OUTPUT
       shell: bash
 
