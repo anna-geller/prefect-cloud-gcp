@@ -79,13 +79,3 @@ runs:
         EOF
         python blocks.py
       shell: bash
-    - name: Check out demo repo
-      uses: actions/checkout@v3
-      with:
-        repository: anna-geller/prefect-gcp
-    - run: |
-        prefect deployment build flows/hello.py:hello -n world -sb github/"${{ inputs.github_block_name }}" \
-        -ib cloud-run-job/"${{ inputs.cloudrun_block_name }}" --skip-upload -a -v $GITHUB_SHA
-      shell: bash
-    - run: prefect deployment run hello/world
-      shell: bash
