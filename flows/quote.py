@@ -4,7 +4,7 @@ from platform import node, platform
 
 
 @flow
-def bs():
+def quote():
     logger = get_run_logger()
     fake = Faker()
     logger.info("We should %s 🚀", fake.bs())
@@ -12,4 +12,4 @@ def bs():
 
 
 if __name__ == "__main__":
-    bs()
+    quote()
