@@ -29,7 +29,7 @@ inputs:
     description: 'Python version'
     required: false
     default: "3.10"  # the latest Prefect 2 version is used by default
-  install_dependencies_command:
+  install_command:
     description: 'Can be set to e.g. pip install -r requirements.txt'
     required: false
     default: "pip install ."  # install via setup.py by default
@@ -44,7 +44,7 @@ runs:
     - id: install-prefect
       run: |
         pip install prefect
-        ${{ inputs.install_dependencies_command }}
+        ${{ inputs.install_command }}
       shell: bash
 
     - id: login-prefect

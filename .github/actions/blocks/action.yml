@@ -10,10 +10,6 @@ inputs:
   prefect_api_url:
     description: 'Prefect Cloud API URL'
     required: true
-  python_version:
-    description: 'Python version'
-    required: false
-    default: "3.10"  # the latest Prefect 2 version is used by default
   github_block_name:
     description: 'Name of the GitHub block'
     required: false
@@ -22,19 +18,23 @@ inputs:
     description: 'Name of the CloudRunJob block'
     required: false
     default: "default"
-  image_uri:
-    description: 'Name of the AR image URI'
-    required: true
-    default: "us-east1-docker.pkg.dev/prefect-community/prefect/deployments"
   gcp_creds_block_name:
     description: 'Name of the GcpCredentials block'
     required: false
     default: "default"
+  image_uri:
+    description: 'Name of the AR image URI'
+    required: true
+    default: "us-east1-docker.pkg.dev/prefect-community/prefect/deployments"
   region:
     description: GCP region
     required: true
     default: 'us-east1'
-  install_dependencies_command:
+  python_version:
+    description: 'Python version'
+    required: false
+    default: "3.10"  # the latest Prefect 2 version is used by default
+  install_command:
     description: 'Can be set to e.g. pip install -r requirements.txt'
     required: false
     default: "pip install ."  # install via setup.py by default
@@ -49,7 +49,7 @@ runs:
     - id: install-prefect
       run: |
         pip install prefect
-        ${{ inputs.install_dependencies_command }}
+        ${{ inputs.install_command }}
       shell: bash
 
     - id: login-prefect

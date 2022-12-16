@@ -10,57 +10,40 @@ on:
         description: 'Name of the CloudRunJob block'
         required: false
         default: "default"
-      image_uri:
-        description: 'Name of the AR image URI'
-        required: true
-        default: "us-east1-docker.pkg.dev/prefect-community/prefect/deployments"
       gcp_creds_block_name:
         description: 'Name of the GcpCredentials block'
         required: false
         default: "default"
+      image_uri:
+        description: 'Name of the AR image URI'
+        required: true
+        default: "us-east1-docker.pkg.dev/prefect-community/prefect/deployments"
       region:
         description: GCP region
         required: true
         default: 'us-east1'
-      install_dependencies_command:
-        description: 'Can be set to e.g. pip install -r requirements.txt'
-        required: false
-        default: "pip install ."  # install via setup.py by default
       python_version:
         description: 'Python version'
         required: false
         default: "3.10"  # the latest Prefect 2 version is used by default
+      install_command:
+        description: 'Can be set to e.g. pip install -r requirements.txt'
+        required: false
+        default: "pip install ."  # install via setup.py by default
 jobs:
-  list-flows:
+  blocks:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - id: set-matrix
-        run: echo "matrix=$(ls flows/*.py | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
-
-  deploy:
-    needs: list-flows
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        flows: ${{ fromJson(needs.list-flows.outputs.matrix) }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - id: flow  # example output: "flows/hello.py:hello"
-        run: |
-          export FLOW_NAME=$(basename ${{ matrix.flows }} .py)
-          echo "entrypoint=${{ matrix.flows }}:$FLOW_NAME" >> $GITHUB_OUTPUT
-      - id: deploy
-        uses: ./.github/actions/deploy-flows
+      - uses: actions/checkout@v3
+      - id: deploy-container
+        uses: ./.github/actions/blocks
         with:
           prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
           prefect_api_url: ${{ secrets.PREFECT_API_URL }}
-          python_version: ${{ github.event.inputs.python_version }} # optional
-          install_dependencies_command: ${{ github.event.inputs.install_dependencies_command }} # optional
-          region: ${{ github.event.inputs.region }}  # optional
           github_block_name: ${{ github.event.inputs.github_block_name }} # optional
           cloudrun_block_name: ${{ github.event.inputs.cloudrun_block_name }} # optional
+          gcp_creds_block_name: ${{ github.event.inputs.gcp_creds_block_name }} # optional
+          image_uri: ${{ github.event.inputs.image_uri }}  # optional
+          region: ${{ github.event.inputs.region }}  # optional
+          python_version: ${{ github.event.inputs.python_version }} # optional
+          install_command: ${{ github.event.inputs.install_command }} # optional

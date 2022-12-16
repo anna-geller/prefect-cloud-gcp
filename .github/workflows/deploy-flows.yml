@@ -41,4 +41,4 @@ jobs:
           storage_block: "github/default" # optional
           infrastructure_block: "cloud-run-job/default" # optional
           python_version: "3.10" # optional
-          install_dependencies_command: "pip install ." # optional
+          install_command: "pip install ." # optional
