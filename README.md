@@ -52,3 +52,24 @@ This will generate the JSON key file, of which contents you can copy and paste i
 2. It builds a Docker image and pushes it to that Artifact Registry repository, based on ``Dockerfile.agent`` file existing in your custom repository from which you are using this GitHub Action.
 3. It deploys a VM (if one such VM with the same name already exists, it gets deleted before a new VM gets created) and a Docker container running the agent process.
 
+## deploy-flows
+
+This action assumes that your flow script file name matches the name of the flow, e.g. the flow script ``parametrized.py`` has a main flow named ``parametrized`` and that's the flow you want to deploy (and potentially schedule) as part of your deployment:
+
+```python
+from prefect import get_run_logger, flow
+from typing import Any
+
+
+@flow
+def parametrized(
+    user: str = "Marvin", question: str = "Ultimate", answer: Any = 42
+) -> None:
+    logger = get_run_logger()
+    logger.info("Hello from Prefect, %s! 👋", user)
+    logger.info("The answer to the %s question is %s! 🤖", question, answer)
+
+
+if __name__ == "__main__":
+    parametrized(user="World")
+```
