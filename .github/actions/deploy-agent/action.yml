@@ -4,11 +4,14 @@ branding:
   color: blue
 description: 'Package your dependencies into a Docker image and deploy Prefect Cloud execution layer to Google Compute Engine'
 inputs:
+  prefect_api_key:
+    description: 'Prefect Cloud API key'
+    required: true
+  prefect_api_url:
+    description: 'Prefect Cloud API URL'
+    required: true
   gcp_project_id:
     description: 'Name of the GCP Project ID'
-    required: true
-  gcp_sa_email:
-    description: 'Email of the Service Account'
     required: true
   gcp_credentials_json:
     description: 'Content of the Service Account JSON key file'
@@ -17,6 +20,13 @@ inputs:
     description: 'GCP region'
     required: false
     default: 'us-east1'
+  artifact_repository:
+    description: 'Artifact Registry Repository Name'
+    required: false
+    default: prefect
+  gcp_sa_email:
+    description: 'Email of the Service Account'
+    required: true
   zone:
     description: 'GCP region with the zone'
     required: false
@@ -29,10 +39,6 @@ inputs:
     description: 'GCP Compute Engine instance name'
     required: false
     default: 'prefect-cloud-vm'
-  artifact_repository:
-    description: 'Artifact Registry Repository Name'
-    required: false
-    default: prefect
 runs:
   using: "composite"
   steps:
@@ -47,6 +53,8 @@ runs:
     - id: image
       uses: ./.github/actions/container-image
       with:
+        prefect_api_key: ${{ inputs.prefect_api_key }}
+        prefect_api_url: ${{ inputs.prefect_api_url }}
         gcp_project_id: ${{ inputs.gcp_project_id }}
         gcp_credentials_json: ${{ inputs.gcp_credentials_json }}
         region: ${{ inputs.region }}

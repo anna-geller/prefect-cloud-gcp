@@ -24,8 +24,6 @@ inputs:
     description: 'Artifact Registry Repository Name'
     required: false
     default: prefect
-outputs:
-  uri: ${{ steps.set-image.outputs.uri }}
 runs:
   using: "composite"
   steps:
