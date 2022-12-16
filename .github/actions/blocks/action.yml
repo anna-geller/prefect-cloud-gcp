@@ -1,0 +1,91 @@
+name: 'Prefect Blocks'
+description: 'Deploy CloudRunJob and GitHub blocks for serverless containerized execution'
+branding:
+  icon: cloud
+  color: blue
+inputs:
+  prefect_api_key:
+    description: 'Prefect Cloud API key'
+    required: true
+  prefect_api_url:
+    description: 'Prefect Cloud API URL'
+    required: true
+  python_version:
+    description: 'Python version'
+    required: false
+    default: "3.10"  # the latest Prefect 2 version is used by default
+  github_block_name:
+    description: 'Name of the GitHub block'
+    required: false
+    default: "default"
+  cloudrun_block_name:
+    description: 'Name of the CloudRunJob block'
+    required: false
+    default: "default"
+  image_uri:
+    description: 'Name of the AR image URI'
+    required: true
+    default: "us-east1-docker.pkg.dev/prefect-community/prefect/deployments"
+  gcp_creds_block_name:
+    description: 'Name of the GcpCredentials block'
+    required: false
+    default: "default"
+  region:
+    description: GCP region
+    required: true
+    default: 'us-east1'
+  install_dependencies_command:
+    description: 'Can be set to e.g. pip install -r requirements.txt'
+    required: false
+    default: "pip install ."  # install via setup.py by default
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "${{ inputs.python_version }}"
+
+    - id: install-prefect
+      run: |
+        pip install prefect
+        ${{ inputs.install_dependencies_command }}
+      shell: bash
+
+    - id: login-prefect
+      run: |
+        prefect config set PREFECT_API_KEY=${{ inputs.prefect_api_key }}
+        prefect config set PREFECT_API_URL=${{ inputs.prefect_api_url }}
+      shell: bash
+    - id: create-blocks
+      run: |
+        cat <<EOF > blocks.py
+        from prefect.filesystems import GitHub
+        from prefect_gcp.cloud_run import CloudRunJob
+        from prefect_gcp.credentials import GcpCredentials
+        
+        gh = GitHub(repository="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY", reference="$GITHUB_REF_NAME")
+        gh.save("${{ inputs.github_block_name }}", overwrite=True)
+        
+        block = CloudRunJob(
+          image="${{ inputs.image_uri }}",
+          region="${{ inputs.region }}",
+          credentials=GcpCredentials.load("${{ inputs.gcp_creds_block_name }}"),
+          cpu=1,
+          timeout=3600,
+        )
+        block.save("${{ inputs.cloudrun_block_name }}", overwrite=True)
+        
+        EOF
+        python blocks.py
+      shell: bash
+    - name: Check out demo repo
+      uses: actions/checkout@v3
+      with:
+        repository: anna-geller/prefect-gcp
+    - run: |
+        prefect deployment build flows/hello.py:hello -n world -sb github/"${{ inputs.github_block_name }}" \
+        -ib cloud-run-job/"${{ inputs.cloudrun_block_name }}" --skip-upload -a -v $GITHUB_SHA
+      shell: bash
+    - run: prefect deployment run hello/world
+      shell: bash

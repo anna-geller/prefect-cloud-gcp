@@ -24,6 +24,10 @@ inputs:
     description: 'Artifact Registry Repository Name'
     required: false
     default: prefect
+  dockerfile_path:
+    description: 'Artifact Registry Repository Name'
+    required: false
+    default: prefect
 runs:
   using: "composite"
   steps:
@@ -55,6 +59,6 @@ runs:
 
     - id: build-image
       run: |
-        docker build --build-arg PREFECT_API_KEY=${{ inputs.prefect_api_key }} --build-arg PREFECT_API_URL=${{ inputs.prefect_api_url }} -t "${{ env.IMAGE_URI }}" -f Dockerfile .
+        docker build --build-arg PREFECT_API_KEY=${{ inputs.prefect_api_key }} --build-arg PREFECT_API_URL=${{ inputs.prefect_api_url }} -t "${{ env.IMAGE_URI }}" -f ${{ inputs.dockerfile_path }} .
         docker push "${{ env.IMAGE_URI }}"
       shell: bash

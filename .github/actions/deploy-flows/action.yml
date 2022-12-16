@@ -18,11 +18,11 @@ inputs:
     required: false
     default: default
   storage_block:
-    description: 'Name of the GitHub block'
+    description: 'Name of the storage block'
     required: false
     default: "github/default"
   infrastructure_block:
-    description: 'Name of the CloudRunJob block'
+    description: 'Name of the infrastructure block'
     required: false
     default: "cloud-run-job/default"
   python_version:
