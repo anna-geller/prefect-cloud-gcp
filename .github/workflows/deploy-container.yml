@@ -1,4 +1,4 @@
-name: Prefect VM
+name: Prefect VM container
 on:
   workflow_dispatch:
     inputs:
