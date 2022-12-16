@@ -29,7 +29,7 @@ on:
       machine_name:
         description: Unique name for your GCP Compute Engine instance
         required: true
-        default: 'e2-micro'
+        default: 'prefect-cloud-vm'
         type: string
 jobs:
   deploy-container:
