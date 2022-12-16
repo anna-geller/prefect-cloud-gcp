@@ -1,0 +1,48 @@
+name: GCP Artifact Registry image build
+
+on:
+  workflow_dispatch:
+    inputs:
+      gcp_project_id:
+        description: Name of the GCP project ID
+        required: true
+        default: 'prefect-community'
+      region:
+        description: GCP Region
+        required: true
+        default: 'us-east1'
+        type: string
+      ar_repository:
+        description: Artifact Registry Repository
+        required: true
+        default: prefect
+        type: string
+
+env:
+  PROJECT: ${{ github.event.inputs.gcp_project_id }}
+  REGION: ${{ github.event.inputs.region }}
+  REPO: ${{ github.event.inputs.ar_repository }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.build-image.outputs.image }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Login to GAR
+        uses: docker/login-action@v2
+        with:
+          registry: '${{ env.REGION }}-docker.pkg.dev'
+          username: _json_key
+          password: ${{ secrets.GCP_CREDENTIALS }}
+      - name: Build and Push Docker Image
+        id: build-image
+        run: |-
+          export AGENT_IMG="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPO }}/agent:latest"
+          export FLOWS_IMG="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT }}/${{ env.REPO }}/flows:latest"
+          docker build -t $AGENT_IMG -f Dockerfile.agent .
+          docker build -t $FLOWS_IMG .
+          docker push $AGENT_IMG
+          docker push $FLOWS_IMG

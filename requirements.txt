@@ -1,0 +1,15 @@
+Faker
+google-auth
+google-auth-oauthlib
+google-cloud-bigquery
+google-cloud-bigquery-storage
+google-cloud-storage
+google-cloud-aiplatform
+gcsfs
+pandas
+pandas-gbq
+prefect-gcp
+psycopg2-binary
+pydata-google-auth
+pygit2
+python-dotenv

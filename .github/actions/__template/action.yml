@@ -1,0 +1,35 @@
+name: 'Deploy XYZ'
+description: 'Deploy X to Y in order to Z'
+branding:
+  icon: cloud
+  color: blue
+inputs:
+  prefect_api_key:
+    description: 'Prefect Cloud API key'
+    required: true
+  prefect_api_url:
+    description: 'Prefect Cloud API URL'
+    required: true
+  python_version:
+    description: 'Python version'
+    required: false
+    default: "3.10"  # the latest Prefect 2 version is used by default
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "${{ inputs.python_version }}"
+
+    - id: install-prefect
+      run: |
+        pip install prefect
+        ${{ inputs.install_dependencies_command }}
+      shell: bash
+
+    - id: login-prefect
+      run: |
+        prefect config set PREFECT_API_KEY=${{ inputs.prefect_api_key }}
+        prefect config set PREFECT_API_URL=${{ inputs.prefect_api_url }}
+      shell: bash

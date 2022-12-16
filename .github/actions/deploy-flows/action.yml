@@ -1,0 +1,59 @@
+name: 'Deploy flows'
+branding:
+  icon: cloud
+  color: blue
+description: 'Deploy flows to Prefect Cloud and Google Cloud Run'
+inputs:
+  prefect_api_key:
+    description: 'Prefect Cloud API key'
+    required: true
+  prefect_api_url:
+    description: 'Prefect Cloud API URL'
+    required: true
+  flow_entrypoint:
+    description: 'Prefect flow entrypoint e.g. myflow.py:flow_function'
+    required: true
+  deployment_name:
+    description: 'Prefect deployment name - could reference environment or branch name e.g. dev or prod'
+    required: false
+    default: default
+  storage_block:
+    description: 'Name of the GitHub block'
+    required: false
+    default: "github/default"
+  infrastructure_block:
+    description: 'Name of the CloudRunJob block'
+    required: false
+    default: "cloud-run-job/default"
+  python_version:
+    description: 'Python version'
+    required: false
+    default: "3.10"  # the latest Prefect 2 version is used by default
+  install_dependencies_command:
+    description: 'Can be set to e.g. pip install -r requirements.txt'
+    required: false
+    default: "pip install ."  # install via setup.py by default
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "${{ inputs.python_version }}"
+
+    - id: install-prefect
+      run: |
+        pip install prefect
+        ${{ inputs.install_dependencies_command }}
+      shell: bash
+
+    - id: login-prefect
+      run: |
+        prefect config set PREFECT_API_KEY=${{ inputs.prefect_api_key }}
+        prefect config set PREFECT_API_URL=${{ inputs.prefect_api_url }}
+      shell: bash
+
+    - run: |
+        prefect deployment build ${{ inputs.flow_entrypoint }} -n ${{ inputs.deployment_name }} \
+        -sb "${{ inputs.storage_block }}" -ib "${{ inputs.infrastructure_block }}" --skip-upload -a
+      shell: bash

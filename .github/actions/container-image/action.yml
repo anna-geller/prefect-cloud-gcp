@@ -1,0 +1,62 @@
+name: 'Docker image for Prefect Cloud execution layer on Google Cloud'
+branding:
+  icon: cloud
+  color: blue
+description: 'Package your dependencies into a Docker image and push it to Google Artifact Registry'
+inputs:
+  prefect_api_key:
+    description: 'Prefect Cloud API key'
+    required: true
+  prefect_api_url:
+    description: 'Prefect Cloud API URL'
+    required: true
+  gcp_project_id:
+    description: 'Name of the GCP Project ID'
+    required: true
+  gcp_credentials_json:
+    description: 'Content of the Service Account JSON key file'
+    required: true
+  region:
+    description: 'GCP region'
+    required: false
+    default: 'us-east1'
+  artifact_repository:
+    description: 'Artifact Registry Repository Name'
+    required: false
+    default: prefect
+outputs:
+  uri: ${{ steps.set-image.outputs.uri }}
+runs:
+  using: "composite"
+  steps:
+    - name: Authenticate to Google Cloud
+      uses: google-github-actions/auth@v1
+      with:
+        credentials_json: "${{ inputs.gcp_credentials_json }}"
+
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v1
+
+    - id: repository
+      run: gcloud artifacts repositories create ${{ inputs.artifact_repository }} --repository-format=docker --location=${{ inputs.region }}
+      continue-on-error: true
+      shell: bash
+
+    - id: set-image
+      run: |
+        echo "IMAGE_URI=${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_repository }}/agent:$GITHUB_SHA" >> $GITHUB_ENV
+        echo "uri=$(echo $IMAGE_URI)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - name: Login to GAR
+      uses: docker/login-action@v2
+      with:
+        registry: '${{ inputs.region }}-docker.pkg.dev'
+        username: _json_key
+        password: ${{ inputs.gcp_credentials_json }}
+
+    - id: build-image
+      run: |
+        docker build --build-arg PREFECT_API_KEY=${{ inputs.prefect_api_key }} --build-arg PREFECT_API_URL=${{ inputs.prefect_api_url }} -t "${{ env.IMAGE_URI }}" -f Dockerfile .
+        docker push "${{ env.IMAGE_URI }}"
+      shell: bash
