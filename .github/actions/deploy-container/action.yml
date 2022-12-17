@@ -43,6 +43,10 @@ inputs:
     description: 'GCP Compute Engine instance name'
     required: false
     default: 'prefect-cloud-vm'
+outputs:
+  uri:
+    description: "AR image URI"
+    value: ${{ steps.image.outputs.uri }}
 runs:
   using: "composite"
   steps:
