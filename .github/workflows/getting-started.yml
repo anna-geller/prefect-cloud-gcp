@@ -32,18 +32,8 @@ on:
         required: true
         default: 'e2-micro'
         type: string
-      machine_name:
-        description: Unique name for your GCP Compute Engine instance
-        required: false
-        default: 'prefect-cloud-vm'
-        type: string
-      github_block_name:
-        description: 'Name of the GitHub block'
-        required: false
-        default: "default"
-        type: string
-      cloudrun_block_name:
-        description: 'Name of the CloudRunJob block'
+      block_names:
+        description: 'Name of the GitHub and CloudRunJob blocks'
         required: false
         default: "default"
         type: string
@@ -51,16 +41,6 @@ on:
         description: 'Name of the GcpCredentials block'
         required: false
         default: "default"
-        type: string
-      python_version:
-        description: 'Python version'
-        required: false
-        default: "3.10"  # the latest Prefect 2 version is used by default
-        type: string
-      install_command:
-        description: 'Can be set to e.g. pip install -r requirements.txt'
-        required: false
-        default: "pip install ."  # install via setup.py by default
         type: string
       deployment:
         description: 'Prefect deployment name - could reference environment or branch name e.g. dev or prod'
@@ -89,7 +69,6 @@ jobs:
           gcp_sa_email: ${{ secrets.GCP_SA_EMAIL }}
           zone: ${{ github.event.inputs.zone }}  # optional
           machine_type: ${{ github.event.inputs.machine_type }}  # optional
-          machine_name: ${{ github.event.inputs.machine_name }}  # optional
 
       - id: create-blocks
         uses: ./.github/actions/blocks
@@ -97,12 +76,10 @@ jobs:
           prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
           prefect_api_url: ${{ secrets.PREFECT_API_URL }}
           github_block_name: ${{ github.event.inputs.github_block_name }} # optional
-          cloudrun_block_name: ${{ github.event.inputs.cloudrun_block_name }} # optional
-          gcp_creds_block_name: ${{ github.event.inputs.gcp_creds_block_name }} # optional
+          cloudrun_block_name: ${{ github.event.inputs.block_names }} # optional
+          gcp_creds_block_name: ${{ github.event.inputs.block_names }} # optional
           image_uri: ${{ steps.deploy-container.outputs.uri }} # todo check if this works ir modfy deploy-container/yaml
           region: ${{ github.event.inputs.region }}  # optional
-          python_version: ${{ github.event.inputs.python_version }} # optional
-          install_command: ${{ github.event.inputs.install_command }} # optional
 
   list-flows:
     runs-on: ubuntu-latest
@@ -136,7 +113,5 @@ jobs:
           flow_entrypoint: ${{ steps.flow.outputs.entrypoint }}
           deployment: ${{ github.event.inputs.deployment }} # optional
           queue: ${{ github.event.inputs.queue }} # optional
-          storage_block: github/${{ github.event.inputs.github_block_name }} # optional
-          infrastructure_block: cloud-run-job/${{ github.event.inputs.cloudrun_block_name }} # optional
-          python_version: ${{ github.event.inputs.python_version }} # optional
-          install_command: ${{ github.event.inputs.install_command }} # optional
+          storage_block: github/${{ github.event.inputs.block_names }} # optional
+          infrastructure_block: cloud-run-job/${{ github.event.inputs.block_names }} # optional
