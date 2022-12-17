@@ -26,7 +26,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       uri: ${{ steps.deploy-container.outputs.uri }}
-      image: ${{ steps.deploy-container.outputs.image }}
     steps:
       - uses: actions/checkout@v3
       - id: deploy-container
@@ -39,9 +38,13 @@ jobs:
           region: ${{ github.event.inputs.region }}  # optional
           gcp_credentials_json: ${{ secrets.GCP_CREDENTIALS }}
           gcp_project_id: ${{ github.event.inputs.gcp_project_id }} # optional
+      - run: echo ${{ steps.deploy-container.outputs.uri }}
+        shell: bash
+      - run: echo ${{ steps.deploy-container.outputs.image }}
+        shell: bash
   job2:
     runs-on: ubuntu-latest
     needs: container-image
     steps:
       - uses: actions/checkout@v3
-      - run: echo ${{needs.container-image.outputs.image}} ${{needs.container-image.outputs.uri}}
+      - run: echo ${{needs.container-image.outputs.uri}}
