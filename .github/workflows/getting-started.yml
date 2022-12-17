@@ -77,7 +77,7 @@ jobs:
         with:
           prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
           prefect_api_url: ${{ secrets.PREFECT_API_URL }}
-          image_uri: ${{ steps.deploy-container.outputs.uri }}
+          image_uri: ${{ env.IMAGE_URI }}
           block_name: ${{ github.event.inputs.block_name }} # optional
           region: ${{ github.event.inputs.region }}  # optional
 
