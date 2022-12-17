@@ -55,8 +55,6 @@ on:
 jobs:
   deploy-container:
     runs-on: ubuntu-latest
-#    outputs:
-#      uri: ${{ steps.deploy-container.outputs.uri }}
     steps:
       - uses: actions/checkout@v3
       - id: deploy-container
