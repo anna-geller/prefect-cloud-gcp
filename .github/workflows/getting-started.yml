@@ -1,4 +1,4 @@
-name: GCP & Prefect Cloud - getting started
+name: "All-in-one: GCP & Prefect Cloud - getting started"
 on:
   workflow_dispatch:
     inputs:
@@ -78,7 +78,7 @@ jobs:
           github_block_name: ${{ github.event.inputs.block_names }} # optional
           cloudrun_block_name: ${{ github.event.inputs.block_names }} # optional
           gcp_creds_block_name: ${{ github.event.inputs.block_names }} # optional
-          image_uri: ${{ steps.deploy-container.outputs.uri }} # todo check if this works ir modfy deploy-container/yaml
+          image_uri: ${{ steps.deploy-container.outputs.uri }} # todo
           region: ${{ github.event.inputs.region }}  # optional
 
   list-flows:
