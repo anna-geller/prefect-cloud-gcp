@@ -58,6 +58,7 @@ runs:
         prefect config set PREFECT_API_KEY=${{ inputs.prefect_api_key }}
         prefect config set PREFECT_API_URL=${{ inputs.prefect_api_url }}
       shell: bash
+
     - id: create-blocks
       run: |
         cat <<EOF > blocks.py

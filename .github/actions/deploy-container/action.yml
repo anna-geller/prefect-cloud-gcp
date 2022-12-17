@@ -46,7 +46,8 @@ inputs:
 outputs:
   uri:
     description: "AR image URI"
-    value: ${{ steps.set-image.outputs.uri }}
+    value: ${{ steps.image.outputs.uri }}
+#    value: ${{ steps.set-image.outputs.uri }}
 runs:
   using: "composite"
   steps:
@@ -69,9 +70,9 @@ runs:
         artifact_repository: ${{ inputs.artifact_repository }}
         artifact_image_name: ${{ inputs.artifact_image_name }}
 
-    - id: set-image
-      shell: bash
-      run: echo "uri=$(echo '${{ steps.image.outputs.uri }}')" >> $GITHUB_OUTPUT
+#    - id: set-image
+#      shell: bash
+#      run: echo "uri=$(echo '${{ steps.image.outputs.uri }}')" >> $GITHUB_OUTPUT
 
     - id: terminate-if-exists
       run: gcloud compute instances delete "${{ inputs.machine_name }}" --zone "${{ inputs.zone }}" --quiet --verbosity none
