@@ -69,36 +69,17 @@ runs:
         artifact_repository: ${{ inputs.artifact_repository }}
         artifact_image_name: ${{ inputs.artifact_image_name }}
 
-#    - id: print-image
+#    - id: terminate-if-exists
+#      run: gcloud compute instances delete "${{ inputs.machine_name }}" --zone "${{ inputs.zone }}" --quiet --verbosity none
+#      continue-on-error: true
 #      shell: bash
-#      run: echo echo ${{ steps.image.outputs.uri }}
 #
-#    - id: set-image
+#    - id: deploy-vm
 #      shell: bash
-#      run: echo "image=$(echo ${{ steps.image.outputs.uri }})" >> $GITHUB_OUTPUT
-
-    - id: terminate-if-exists
-      run: gcloud compute instances delete "${{ inputs.machine_name }}" --zone "${{ inputs.zone }}" --quiet --verbosity none
-      continue-on-error: true
-      shell: bash
-
-    - id: deploy-vm
-      shell: bash
-      run: |
-        gcloud compute instances create-with-container "${{ inputs.machine_name }}" \
-          --zone "${{ inputs.zone }}" \
-          --machine-type "${{ inputs.machine_type }}" \
-          --service-account "${{ inputs.gcp_sa_email }}" \
-          --scopes "cloud-platform" \
-          --container-image "${{ steps.image.outputs.uri }}"
-
-#    - id: blocks
-#      uses: ./.github/actions/container-image
-#      with:
-#        prefect_api_key: ${{ inputs.prefect_api_key }}
-#        prefect_api_url: ${{ inputs.prefect_api_url }}
-#        gcp_project_id: ${{ inputs.gcp_project_id }}
-#        gcp_credentials_json: ${{ inputs.gcp_credentials_json }}
-#        region: ${{ inputs.region }}
-#        artifact_repository: ${{ inputs.artifact_repository }}
-#        artifact_image_name: ${{ inputs.artifact_image_name }}
+#      run: |
+#        gcloud compute instances create-with-container "${{ inputs.machine_name }}" \
+#          --zone "${{ inputs.zone }}" \
+#          --machine-type "${{ inputs.machine_type }}" \
+#          --service-account "${{ inputs.gcp_sa_email }}" \
+#          --scopes "cloud-platform" \
+#          --container-image "${{ steps.image.outputs.uri }}"
