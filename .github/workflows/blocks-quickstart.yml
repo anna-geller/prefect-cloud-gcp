@@ -1,0 +1,39 @@
+name: Prefect Blocks
+on:
+  workflow_dispatch:
+    inputs:
+      block_name:
+        description: 'Name of the GitHub, CloudRunJob and GcpCredentials blocks'
+        required: false
+        default: "default"
+      image_uri:
+        description: 'Name of the AR image URI'
+        required: true
+        default: "us-east1-docker.pkg.dev/prefect-community/prefect/deployments:latest" # example default value
+      region:
+        description: GCP region
+        required: true
+        default: 'us-east1'
+      python_version:
+        description: 'Python version'
+        required: false
+        default: "3.10"  # the latest Prefect 2 version is used by default
+      install_command:
+        description: 'Can be set to e.g. pip install -r requirements.txt'
+        required: false
+        default: "pip install ."  # install via setup.py by default
+jobs:
+  blocks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: create-blocks
+        uses: ./.github/actions/blocks-quickstart
+        with:
+          prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
+          prefect_api_url: ${{ secrets.PREFECT_API_URL }}
+          block_name: ${{ github.event.inputs.block_name }} # optional
+          image_uri: ${{ github.event.inputs.image_uri }}  # optional
+          region: ${{ github.event.inputs.region }}  # optional
+          python_version: ${{ github.event.inputs.python_version }} # optional
+          install_command: ${{ github.event.inputs.install_command }} # optional
