@@ -1,4 +1,4 @@
-name: Prefect Blocks
+name: Prefect Blocks Quickstart
 on:
   workflow_dispatch:
     inputs:
