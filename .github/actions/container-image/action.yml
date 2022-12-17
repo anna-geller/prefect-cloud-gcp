@@ -32,10 +32,10 @@ inputs:
     description: 'Path and filename of the Dockerfile'
     required: false
     default: Dockerfile
-outputs:
-  uri:
-    description: "AR image URI"
-    value: ${{ steps.set-image.outputs.uri }}
+#outputs:
+#  uri:
+#    description: "AR image URI"
+#    value: ${{ steps.set-image.outputs.uri }}
 runs:
   using: "composite"
   steps:
