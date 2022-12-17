@@ -33,7 +33,7 @@ on:
         default: 'e2-micro'
         type: string
       block_names:
-        description: 'Name of the GitHub and CloudRunJob blocks'
+        description: 'GitHub and CloudRunJob block name'
         required: false
         default: "default"
         type: string
@@ -43,7 +43,7 @@ on:
         default: "default"
         type: string
       deployment:
-        description: 'Prefect deployment name - could reference environment or branch name e.g. dev or prod'
+        description: 'Prefect deployment name (could reference environment or branch name e.g. dev or prod)'
         required: false
         default: default
         type: string
