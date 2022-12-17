@@ -59,9 +59,9 @@ runs:
         echo "uri=$(echo $IMAGE_URI)" >> $GITHUB_OUTPUT
       shell: bash
 
-    - id: print-image
-      run: echo $IMAGE_URI
-      shell: bash
+#    - id: print-image
+#      run: echo $IMAGE_URI
+#      shell: bash
 
     - name: Login to GAR
       uses: docker/login-action@v2
