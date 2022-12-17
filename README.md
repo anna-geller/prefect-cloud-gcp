@@ -11,8 +11,8 @@ GitHub Action deploying Prefect agent as a container to a VM hosted in the Googl
 
 Sign up for a [Prefect Cloud](https://app.prefect.cloud/) account.
 
-Make sure to create a workspace and create an API key.
-Then, add both ``PREFECT_API_KEY`` and ``PREFECT_API_URL``as GitHub Actions secrets.
+1. Create a workspace and an API key.
+2. Add both ``PREFECT_API_KEY`` and ``PREFECT_API_URL``as GitHub Actions secrets.
 
 
 ### Google Cloud
