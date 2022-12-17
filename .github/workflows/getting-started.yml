@@ -75,6 +75,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: deploy-container
     steps:
+      - uses: actions/checkout@v3
       - id: create-blocks
         uses: ./.github/actions/blocks
         with:
@@ -93,8 +94,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
       - id: set-matrix
         run: echo "matrix=$(ls flows/*.py | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
 
@@ -105,8 +105,7 @@ jobs:
       matrix:
         flows: ${{ fromJson(needs.list-flows.outputs.matrix) }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
       - id: flow  # example output: "flows/hello.py:hello"
         run: |
           export FLOW_NAME=$(basename ${{ matrix.flows }} .py)
