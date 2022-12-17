@@ -50,7 +50,7 @@ runs:
 
     - id: set-image
       run: |
-        echo "LATEST=${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_repository }}/${{ inputs.artifact_image_name }}:latest" >> $GITHUB_ENV
+        echo "RAW_IMAGE=${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_repository }}/${{ inputs.artifact_image_name }}" >> $GITHUB_ENV
         echo "IMAGE_URI=${{ inputs.region }}-docker.pkg.dev/${{ inputs.gcp_project_id }}/${{ inputs.artifact_repository }}/${{ inputs.artifact_image_name }}:$GITHUB_SHA" >> $GITHUB_ENV
         echo "uri=$(echo $IMAGE_URI)" >> $GITHUB_OUTPUT
       shell: bash
@@ -64,6 +64,8 @@ runs:
 
     - id: build-image
       run: |
-        docker build --build-arg PREFECT_API_KEY=${{ inputs.prefect_api_key }} --build-arg PREFECT_API_URL=${{ inputs.prefect_api_url }} -t "${{ env.IMAGE_URI }}" -t "${{ env.LATEST }}" -f ${{ inputs.dockerfile_path }} .
+        docker build -q --build-arg PREFECT_API_KEY=${{ inputs.prefect_api_key }} --build-arg PREFECT_API_URL=${{ inputs.prefect_api_url }} -t "${{ env.RAW_IMAGE }}" -f ${{ inputs.dockerfile_path }} .
+        docker tag "${{ env.RAW_IMAGE }}" "${{ env.IMAGE_URI }}"
+        docker push "${{ env.RAW_IMAGE }}"
         docker push "${{ env.IMAGE_URI }}"
       shell: bash
