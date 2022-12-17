@@ -24,6 +24,10 @@ inputs:
     description: 'Artifact Registry Repository Name'
     required: false
     default: prefect
+  artifact_image_name:
+    description: 'Artifact Registry Image Name'
+    required: false
+    default: deployments
   gcp_sa_email:
     description: 'Email of the Service Account'
     required: true
@@ -59,13 +63,14 @@ runs:
         gcp_credentials_json: ${{ inputs.gcp_credentials_json }}
         region: ${{ inputs.region }}
         artifact_repository: ${{ inputs.artifact_repository }}
+        artifact_image_name: ${{ inputs.artifact_image_name }}
 
-    - id: delete-if-exists-to-redeploy
+    - id: terminate-if-exists
       run: gcloud compute instances delete "${{ inputs.machine_name }}" --zone "${{ inputs.zone }}" --quiet
       continue-on-error: true
       shell: bash
 
-    - id: deploy-new-vm
+    - id: deploy-vm
       shell: bash
       run: |
         gcloud compute instances create-with-container "${{ inputs.machine_name }}" \
@@ -74,3 +79,7 @@ runs:
           --service-account "${{ inputs.gcp_sa_email }}" \
           --scopes "cloud-platform" \
           --container-image "${{ steps.image.outputs.uri }}"
+
+#    - id: set-image
+#      shell: bash
+#      run: echo "uri=$(echo '${{ steps.image.outputs.uri }}')" >> $GITHUB_OUTPUT

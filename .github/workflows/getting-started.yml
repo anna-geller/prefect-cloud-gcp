@@ -1,0 +1,142 @@
+name: GCP & Prefect Cloud - getting started
+on:
+  workflow_dispatch:
+    inputs:
+      gcp_project_id:
+        description: Name of the GCP project ID
+        required: true
+        default: 'prefect-community'
+        type: string
+      region:
+        description: GCP region
+        required: true
+        default: 'us-east1'
+        type: string
+      zone:
+        description: Zone in the selected GCP region
+        required: true
+        default: 'us-east1-b'
+        type: string
+      artifact_repository:
+        description: Artifact Registry Repository
+        required: true
+        default: 'prefect'
+        type: string
+      artifact_image_name:
+        description: Artifact Container Name
+        required: true
+        default: 'deployments'
+        type: string
+      machine_type:
+        description: GCP Compute Engine instance type
+        required: true
+        default: 'e2-micro'
+        type: string
+      machine_name:
+        description: Unique name for your GCP Compute Engine instance
+        required: false
+        default: 'prefect-cloud-vm'
+        type: string
+      github_block_name:
+        description: 'Name of the GitHub block'
+        required: false
+        default: "default"
+        type: string
+      cloudrun_block_name:
+        description: 'Name of the CloudRunJob block'
+        required: false
+        default: "default"
+        type: string
+      gcp_creds_block_name:
+        description: 'Name of the GcpCredentials block'
+        required: false
+        default: "default"
+        type: string
+      python_version:
+        description: 'Python version'
+        required: false
+        default: "3.10"  # the latest Prefect 2 version is used by default
+        type: string
+      install_command:
+        description: 'Can be set to e.g. pip install -r requirements.txt'
+        required: false
+        default: "pip install ."  # install via setup.py by default
+        type: string
+      deployment:
+        description: 'Prefect deployment name - could reference environment or branch name e.g. dev or prod'
+        required: false
+        default: default
+        type: string
+      queue:
+        description: 'Prefect queue name'
+        required: false
+        default: default
+        type: string
+jobs:
+  execution-layer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - id: deploy-container
+        uses: ./.github/actions/deploy-container
+        with:
+          prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
+          prefect_api_url: ${{ secrets.PREFECT_API_URL }}
+          artifact_repository: ${{ github.event.inputs.artifact_repository }}  # optional
+          region: ${{ github.event.inputs.region }}  # optional
+          gcp_credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          gcp_project_id: ${{ github.event.inputs.gcp_project_id }} # optional
+          gcp_sa_email: ${{ secrets.GCP_SA_EMAIL }}
+          zone: ${{ github.event.inputs.zone }}  # optional
+          machine_type: ${{ github.event.inputs.machine_type }}  # optional
+          machine_name: ${{ github.event.inputs.machine_name }}  # optional
+
+      - id: create-blocks
+        uses: ./.github/actions/blocks
+        with:
+          prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
+          prefect_api_url: ${{ secrets.PREFECT_API_URL }}
+          github_block_name: ${{ github.event.inputs.github_block_name }} # optional
+          cloudrun_block_name: ${{ github.event.inputs.cloudrun_block_name }} # optional
+          gcp_creds_block_name: ${{ github.event.inputs.gcp_creds_block_name }} # optional
+          image_uri: ${{ steps.deploy-container.outputs.uri }} # todo check if this works ir modfy deploy-container/yaml
+          region: ${{ github.event.inputs.region }}  # optional
+          python_version: ${{ github.event.inputs.python_version }} # optional
+          install_command: ${{ github.event.inputs.install_command }} # optional
+
+  list-flows:
+    runs-on: ubuntu-latest
+    needs: execution-layer
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - id: set-matrix
+        run: echo "matrix=$(ls flows/*.py | jq -R -s -c 'split("\n")[:-1]')" >> $GITHUB_OUTPUT
+
+  deploy:
+    needs: list-flows
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flows: ${{ fromJson(needs.list-flows.outputs.matrix) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - id: flow  # example output: "flows/hello.py:hello"
+        run: |
+          export FLOW_NAME=$(basename ${{ matrix.flows }} .py)
+          echo "entrypoint=${{ matrix.flows }}:$FLOW_NAME" >> $GITHUB_OUTPUT
+      - id: deploy
+        uses: ./.github/actions/deploy-flows
+        with:
+          prefect_api_key: ${{ secrets.PREFECT_API_KEY }}
+          prefect_api_url: ${{ secrets.PREFECT_API_URL }}
+          flow_entrypoint: ${{ steps.flow.outputs.entrypoint }}
+          deployment: ${{ github.event.inputs.deployment }} # optional
+          queue: ${{ github.event.inputs.queue }} # optional
+          storage_block: github/${{ github.event.inputs.github_block_name }} # optional
+          infrastructure_block: cloud-run-job/${{ github.event.inputs.cloudrun_block_name }} # optional
+          python_version: ${{ github.event.inputs.python_version }} # optional
+          install_command: ${{ github.event.inputs.install_command }} # optional
