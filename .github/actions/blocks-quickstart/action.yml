@@ -52,5 +52,5 @@ runs:
       shell: bash
 
     - id: create-blocks
-      run: python blocks.py -b $GITHUB_REF_NAME -r "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" -n ${{ inputs.block_name }} -i ${{ inputs.image_uri }} --region ${{ inputs.region }}
+      run: python ${{ github.action_path }}/blocks.py -b $GITHUB_REF_NAME -r $GITHUB_SERVER_URL/$GITHUB_REPOSITORY -n ${{ inputs.block_name }} -i ${{ inputs.image_uri }} --region ${{ inputs.region }}
       shell: bash
