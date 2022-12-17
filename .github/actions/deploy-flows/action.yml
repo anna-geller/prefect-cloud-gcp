@@ -44,6 +44,7 @@ runs:
       uses: actions/setup-python@v4
       with:
         python-version: "${{ inputs.python_version }}"
+        cache: 'pip'
 
     - id: install-prefect
       run: |
