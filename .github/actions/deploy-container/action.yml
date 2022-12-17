@@ -47,6 +47,9 @@ outputs:
   uri:
     description: "AR image URI"
     value: ${{ steps.image.outputs.uri }}
+  image:
+    description: "AR image"
+    value: ${{ steps.set-image.outputs.image }}
 #    value: ${{ steps.set-image.outputs.uri }}
 runs:
   using: "composite"
@@ -70,21 +73,25 @@ runs:
         artifact_repository: ${{ inputs.artifact_repository }}
         artifact_image_name: ${{ inputs.artifact_image_name }}
 
-#    - id: set-image
+    - id: print-image
+      shell: bash
+      run: echo echo ${{ steps.image.outputs.uri }}
+
+    - id: set-image
+      shell: bash
+      run: echo "image=$(echo ${{ steps.image.outputs.uri }})" >> $GITHUB_OUTPUT
+
+#    - id: terminate-if-exists
+#      run: gcloud compute instances delete "${{ inputs.machine_name }}" --zone "${{ inputs.zone }}" --quiet --verbosity none
+#      continue-on-error: true
 #      shell: bash
-#      run: echo "uri=$(echo '${{ steps.image.outputs.uri }}')" >> $GITHUB_OUTPUT
-
-    - id: terminate-if-exists
-      run: gcloud compute instances delete "${{ inputs.machine_name }}" --zone "${{ inputs.zone }}" --quiet --verbosity none
-      continue-on-error: true
-      shell: bash
-
-    - id: deploy-vm
-      shell: bash
-      run: |
-        gcloud compute instances create-with-container "${{ inputs.machine_name }}" \
-          --zone "${{ inputs.zone }}" \
-          --machine-type "${{ inputs.machine_type }}" \
-          --service-account "${{ inputs.gcp_sa_email }}" \
-          --scopes "cloud-platform" \
-          --container-image "${{ steps.image.outputs.uri }}"
+#
+#    - id: deploy-vm
+#      shell: bash
+#      run: |
+#        gcloud compute instances create-with-container "${{ inputs.machine_name }}" \
+#          --zone "${{ inputs.zone }}" \
+#          --machine-type "${{ inputs.machine_type }}" \
+#          --service-account "${{ inputs.gcp_sa_email }}" \
+#          --scopes "cloud-platform" \
+#          --container-image "${{ steps.image.outputs.uri }}"

@@ -25,7 +25,7 @@ inputs:
   image_uri:
     description: 'Name of the AR image URI'
     required: true
-    default: "us-east1-docker.pkg.dev/prefect-community/prefect/deployments"
+    default: "us-east1-docker.pkg.dev/prefect-community/prefect/deployments:latest"
   region:
     description: GCP region
     required: true
