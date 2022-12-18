@@ -69,7 +69,7 @@ runs:
     - id: deploy-vm
       shell: bash
       run: |
-        export EMAIL=$(cat $GOOGLE_GHA_CREDS_PATH | jq '.["client_email"]')
+        export EMAIL=$(cat $GOOGLE_GHA_CREDS_PATH | jq -r '.["client_email"]')
         gcloud compute instances create-with-container "${{ inputs.machine_name }}" \
           --zone "${{ inputs.zone }}" \
           --machine-type "${{ inputs.machine_type }}" \
