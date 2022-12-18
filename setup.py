@@ -10,13 +10,7 @@ setup(
     author="Prefect Community",
     author_email="hello@prefect.io",
     keywords="prefect",
-    # long_description=open("README.md").read(),
-    # long_description_content_type="text/markdown",
-    # Package setup
     packages=find_packages(exclude=["tests"]),
-    # packages=find_packages(where="src", exclude=["tests"]),
-    # package_dir={"": "src"},
-    # include_package_data=True,
     version="1.0",
     python_requires=">=3.8",
     install_requires=requirements,
@@ -29,6 +23,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
         "Topic :: Software Development :: Libraries",
     ],
 )

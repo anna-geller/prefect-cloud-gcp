@@ -14,6 +14,7 @@ ARG PREFECT_API_URL
 ENV PREFECT_API_URL=$PREFECT_API_URL
 
 ENV PYTHONUNBUFFERED True
+
 COPY flows/ /opt/prefect/flows/
 
 ENTRYPOINT ["prefect", "agent", "start", "-q", "default"]
