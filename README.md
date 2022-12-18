@@ -62,7 +62,7 @@ This will generate the JSON key file, of which contents you can copy and paste i
 
 # What does the main Getting Started action do?
 
-1. It creates an Artifact Registry repository if one doesn't exist yet. That's why the permissions on your service account must be set to admin ``"roles/artifactregistry.admin"`` rather than just a writer: ``"roles/artifactregistry.writer"``
+1. It creates an Artifact Registry repository if one doesn't exist yet. That's why the permissions on your service account must be set to admin ``"roles/artifactregistry.admin"`` rather than just a writer: ``"roles/artifactregistry.writer"`` - if you prefer to manually create the repository and limit the service account permissions, you can do that.
 2. It builds a Docker image and pushes it to that Artifact Registry repository, based on the [``Dockerfile``](Dockerfile)
 3. It deploys a VM (if one such VM with the same name already exists, it gets deleted before a new VM gets created) and a Docker container running a Prefect worker process that deploys flow runs. By default, the flows are configured to be deployed as serverless containers using Google Cloud Run jobs. This makes it easy to scale your project as your needs grow - no need to monitor and maintain the underlying infrastructure - serverless containers gets spun up based on the provided Artifact Registry image and the resource allocation can be adjusted any time on the ``CloudRunJob`` block, even from the Prefect UI.
 4. It automatically deploys your first [Prefect blocks](.github/actions/blocks-quickstart/blocks.py)

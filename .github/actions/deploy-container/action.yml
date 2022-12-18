@@ -25,9 +25,6 @@ inputs:
     description: 'Artifact Registry Image Name'
     required: false
     default: deployments
-#  gcp_sa_email:
-#    description: 'Email of the Service Account'
-#    required: true
   zone:
     description: 'GCP region with the zone'
     required: false
