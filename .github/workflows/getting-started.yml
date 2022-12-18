@@ -2,11 +2,6 @@ name: "All-in-one: GCP & Prefect Cloud - getting started"
 on:
   workflow_dispatch:
     inputs:
-      gcp_project_id:
-        description: Name of the GCP project ID
-        required: true
-        default: 'prefect-community'
-        type: string
       region:
         description: GCP region
         required: true
@@ -22,7 +17,7 @@ on:
         required: true
         default: 'prefect'
         type: string
-      artifact_image_name:
+      image_name:
         description: Artifact Container Name
         required: true
         default: 'deployments'
@@ -65,8 +60,7 @@ jobs:
           artifact_repository: ${{ github.event.inputs.artifact_repository }}  # optional
           region: ${{ github.event.inputs.region }}  # optional
           gcp_credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-          gcp_project_id: ${{ github.event.inputs.gcp_project_id }} # optional
-          gcp_sa_email: ${{ secrets.GCP_SA_EMAIL }}
+#          gcp_sa_email: ${{ secrets.GCP_SA_EMAIL }}
           zone: ${{ github.event.inputs.zone }}  # optional
           machine_type: ${{ github.event.inputs.machine_type }}  # optional
 

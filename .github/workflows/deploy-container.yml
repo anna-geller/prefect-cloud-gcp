@@ -2,10 +2,6 @@ name: Prefect VM container
 on:
   workflow_dispatch:
     inputs:
-      gcp_project_id:
-        description: Name of the GCP project ID
-        required: true
-        default: 'prefect-community'
       artifact_repository:
         description: Artifact Registry Repository
         required: true
@@ -44,8 +40,7 @@ jobs:
           artifact_repository: ${{ github.event.inputs.artifact_repository }}  # optional
           region: ${{ github.event.inputs.region }}  # optional
           gcp_credentials_json: ${{ secrets.GCP_CREDENTIALS }}
-          gcp_project_id: ${{ github.event.inputs.gcp_project_id }} # optional
-          gcp_sa_email: ${{ secrets.GCP_SA_EMAIL }}
+#          gcp_sa_email: ${{ secrets.GCP_SA_EMAIL }}
           zone: ${{ github.event.inputs.zone }}  # optional
           machine_type: ${{ github.event.inputs.machine_type }}  # optional
           machine_name: ${{ github.event.inputs.machine_name }}  # optional
