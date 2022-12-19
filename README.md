@@ -69,27 +69,10 @@ This will generate the JSON key file, of which contents you can copy and paste i
 5. It automatically deploys your first [Prefect flows](flows)
 
 
-# How can I deploy only a specific GitHub action?
 
+# How does this automated GitHub Actions process deploy flows?
 
-## blocks
-
-TODO
-
-## blocks-quickstart
-
-TODO
-
-## container-image
-
-TODO
-
-## deploy-container
-
-TODO
-
-
-## deploy-flows
+## ``deploy-flows`` action
 
 This action assumes that the name of your `flow_script.py` matches the name of the flow, e.g. the flow script ``parametrized.py`` has a function named ``parametrized()`` decorated with `@flow`. This means that if your script `parametrized.py` has multiple flows within, only the flow `parametrized` gets deployed (and potentially scheduled) as part of your Prefect Cloud deployment:
 
