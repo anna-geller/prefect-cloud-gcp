@@ -6,6 +6,9 @@ This repository includes example project structure with:
 - modular GitHub Actions in case you only want to use this template to deploy a VM, or to only build and push a Docker image to the Google Artifact Registry - the custom modules give you the freedom to choose which component you want to use, and you can deploy those one by one to set up everything more incrementally, and have more control over how you do it.  
 
 
+[Blog post: GCP and Prefect Cloud — from Docker Container to Cloud VM on Google Compute Engine](https://medium.com/the-prefect-blog/gcp-and-prefect-cloud-from-docker-container-to-cloud-vm-on-google-compute-engine-2dffa026d16b)
+
+
 ## Prerequisites
 
 ### Prefect Cloud
