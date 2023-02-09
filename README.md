@@ -105,5 +105,5 @@ if __name__ == "__main__":
 
 You can still create a deployment for the flow ``some_subflow`` if you want to, but the default GitHub Action here won't do it for you - this is not a Prefect limitation, it's only a choice made in this demo to make the example project here easier to follow (and more standardized to deploy in an automated CI/CD pipeline).
 
-> As an alternative approach to naming the main flow the same way as the script name, you could consider naming each main flow that needs to get schedule as ``main``.
+> As an alternative approach to naming the main flow the same way as the script name, you could consider prefixing the name of each _main_ flow that needs scheduled with ``main``.
 
